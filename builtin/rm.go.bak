@@ -1,0 +1,69 @@
+package builtin
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
+func init() {
+	// Example with alias
+	Register("rm", Rm, "Remove files or directories (-r, -f supported)", "del")
+}
+
+func Rm(args []string) int {
+	force := false
+	recursive := false
+	paths := []string{}
+
+	// very small flag parser: supports -f, -r, -rf, -fr
+	for _, a := range args {
+		if a == "-f" || a == "--force" {
+			force = true
+			continue
+		}
+		if a == "-r" || a == "-R" || a == "--recursive" {
+			recursive = true
+			continue
+		}
+		if a == "-rf" || a == "-fr" {
+			force, recursive = true, true
+			continue
+		}
+		paths = append(paths, a)
+	}
+	if len(paths) == 0 {
+		if !force {
+			fmt.Fprintln(os.Stderr, "rm: missing operand")
+			return 1
+		}
+		return 0
+	}
+
+	var ret int
+	for _, p := range paths {
+		var err error
+		if recursive {
+			err = os.RemoveAll(p)
+		} else {
+			// Disallow removing non-empty directories without -r
+			fi, statErr := os.Lstat(p)
+			if statErr == nil && fi.IsDir() {
+				// allow removing '.' or '..'? no.
+				base := filepath.Base(p)
+				if base == "." || base == ".." {
+					err = fmt.Errorf("refusing to remove %q", p)
+				} else {
+					err = fmt.Errorf("cannot remove %q: is a directory", p)
+				}
+			} else {
+				err = os.Remove(p)
+			}
+		}
+		if err != nil && !force {
+			fmt.Fprintf(os.Stderr, "rm: %v\n", err)
+			ret = 1
+		}
+	}
+	return ret
+}

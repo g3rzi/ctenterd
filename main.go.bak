@@ -1,0 +1,97 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+	"ctenter/agent/ctenterd/builtin"
+	"ctenter/pkg/color"
+)
+
+func main() {
+	if len(os.Args) > 1 {
+		// Exec mode - run command and exit
+		command := strings.Join(os.Args[1:], " ")
+		runCommand(command)
+	} else {
+		// Interactive REPL mode
+		runREPL()
+	}
+}
+
+func runREPL() {
+	fmt.Println("ctenterd v1.0 - Container Shell Agent")
+	fmt.Println("Type 'help' for available commands, 'exit' to quit")
+	
+	scanner := bufio.NewScanner(os.Stdin)
+	
+	for {
+		//fmt.Print("ctenterd> ")
+		fmt.Print(color.Prompt("ctenterd> "))
+		
+		if !scanner.Scan() {
+			break
+		}
+		
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+		
+		if line == "exit" || line == "quit" {
+			break
+		}
+		
+		runCommand(line)
+	}
+	
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading input: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func runCommand(input string) {
+	parts := strings.Fields(input)
+	if len(parts) == 0 {
+		return
+	}
+	
+	command := parts[0]
+	args := parts[1:]
+	
+	switch command {
+	case "help":
+		showHelp()
+	case "ps":
+		builtin.PS(args)
+	case "ls":
+		builtin.LS(args)
+	case "cat":
+		builtin.Cat(args)
+	case "whoami":
+		builtin.Whoami(args)
+	case "env":
+		builtin.Env(args)
+	case "pwd":
+		builtin.Pwd(args)
+	case "echo":
+		builtin.Echo(args)
+	default:
+		fmt.Printf("Unknown command: %s\n", command)
+		fmt.Println("Type 'help' for available commands")
+	}
+}
+
+func showHelp() {
+	fmt.Println("Available commands:")
+	fmt.Println("  ps       - List running processes")
+	fmt.Println("  ls [dir] - List directory contents")
+	fmt.Println("  cat file - Display file contents")
+	fmt.Println("  whoami   - Show current user")
+	fmt.Println("  env      - Show environment variables")
+	fmt.Println("  pwd      - Show current directory")
+	fmt.Println("  help     - Show this help")
+	fmt.Println("  exit     - Exit the shell")
+}
