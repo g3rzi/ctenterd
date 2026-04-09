@@ -1,5 +1,19 @@
 # ctenterd
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/91d2b0ec-9fda-46e4-a486-4528a84df0d3" width="220"/>
+</p>
+<p align="center">
+  A lightweight container shell agent.
+</p>
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/g3rzi/ctenterd?style=for-the-badge" />
+  <img src="https://img.shields.io/github/downloads/g3rzi/ctenterd/total?style=for-the-badge" />
+  <img src="https://img.shields.io/github/license/g3rzi/ctenterd?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/go-1.21%2B-blue?style=for-the-badge&logo=go" />
+</p>
+
+
 **ctenterd** is a lightweight container shell agent — a minimal interactive shell designed for use inside containers. It provides a REPL (Read-Eval-Print Loop) with a curated set of built-in commands and falls back to executing binaries found on `PATH` for anything else.
 
 ## Features
