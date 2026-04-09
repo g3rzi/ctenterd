@@ -1,5 +1,3 @@
-# ctenterd
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/91d2b0ec-9fda-46e4-a486-4528a84df0d3" width="220"/>
 </p>
